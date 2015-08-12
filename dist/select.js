@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.12.1 - 2015-07-28T03:50:59.076Z
+ * Version: 0.12.1 - 2015-08-12T21:45:53.186Z
  * License: MIT
  */
 
@@ -780,7 +780,7 @@ uis.directive('uiSelect',
       if (angular.isDefined(tAttrs.multiple))
         tElement.append("<ui-select-multiple/>").removeAttr('multiple');
       else
-        tElement.append("<ui-select-single/>");       
+        tElement.append("<ui-select-single/>");
 
       return function(scope, element, attrs, ctrls, transcludeFn) {
 
@@ -802,7 +802,10 @@ uis.directive('uiSelect',
 
         $select.onSelectCallback = $parse(attrs.onSelect);
         $select.onRemoveCallback = $parse(attrs.onRemove);
-        
+
+        //Limit the number of selections allowed
+        $select.limit = (angular.isDefined(attrs.limit)) ? parseInt(attrs.limit, 10) : undefined;
+
         //Set reference to ngModel from uiSelectCtrl
         $select.ngModel = ngModel;
 
@@ -1013,42 +1016,46 @@ uis.directive('uiSelect',
             directionUpClassName = 'direction-up';
 
         // Support changing the direction of the dropdown if there isn't enough space to render it.
-        scope.$watch('$select.open', function(isOpen) {
-          if (isOpen) {
-            dropdown = angular.element(element).querySelectorAll('.ui-select-dropdown');
-            if (dropdown === null) {
-              return;
-            }
-
-            // Hide the dropdown so there is no flicker until $timeout is done executing.
-            dropdown[0].style.opacity = 0;
-
-            // Delay positioning the dropdown until all choices have been added so its height is correct.
-            $timeout(function(){
-              var offset = uisOffset(element);
-              var offsetDropdown = uisOffset(dropdown);
-
-              // Determine if the direction of the dropdown needs to be changed.
-              if (offset.top + offset.height + offsetDropdown.height > $document[0].documentElement.scrollTop + $document[0].documentElement.clientHeight) {
-                dropdown[0].style.position = 'absolute';
-                dropdown[0].style.top = (offsetDropdown.height * -1) + 'px';
-                element.addClass(directionUpClassName);
-              }
-
-              // Display the dropdown once it has been positioned.
-              dropdown[0].style.opacity = 1;
-            });
-          } else {
+        if (!attrs.direction || attrs.direction === 'auto' || attrs.direction === 'up') {
+          scope.$watch('$select.open', function(isOpen) {
+            if (isOpen) {
+              dropdown = angular.element(element).querySelectorAll('.ui-select-dropdown');
               if (dropdown === null) {
                 return;
               }
 
-              // Reset the position of the dropdown.
-              dropdown[0].style.position = '';
-              dropdown[0].style.top = '';
-              element.removeClass(directionUpClassName);
-          }
-        });
+              // Hide the dropdown so there is no flicker until $timeout is done executing.
+              dropdown[0].style.opacity = 0;
+
+              // Delay positioning the dropdown until all choices have been added so its height is correct.
+              $timeout(function(){
+                var offset = uisOffset(element);
+                var offsetDropdown = uisOffset(dropdown);
+
+                // Determine if the direction of the dropdown needs to be changed.
+                if (attrs.direction === 'up' || offset.top + offset.height + offsetDropdown.height > $document[0].documentElement.scrollTop + $document[0].documentElement.clientHeight) {
+                  dropdown[0].style.position = 'absolute';
+                  dropdown[0].style.top = (offsetDropdown.height * -1) + 'px';
+                  element.addClass(directionUpClassName);
+                }
+
+                // Display the dropdown once it has been positioned.
+                dropdown[0].style.opacity = 1;
+              });
+            } else {
+                if (dropdown === null) {
+                  return;
+                }
+
+                // Reset the position of the dropdown.
+                dropdown[0].style.position = '';
+                dropdown[0].style.top = '';
+                element.removeClass(directionUpClassName);
+            }
+          });
+        } else if (attrs.direction === 'down') {
+          // current position is down, no need to do anything
+        }
       };
     }
   };
@@ -1145,7 +1152,7 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
 
       ctrl.getPlaceholder = function(){
         //Refactor single?
-        if($select.selected.length) return;
+        if($select.selected && $select.selected.length) return;
         return $select.placeholder;
       };
 
@@ -1244,6 +1251,9 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
       };
 
       scope.$on('uis:select', function (event, item) {
+        if($select.selected.length >= $select.limit) {
+          return;
+        }
         $select.selected.push(item);
         $selectMultiple.updateModel();
       });
@@ -1488,6 +1498,7 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
     }
   };
 }]);
+
 uis.directive('uiSelectSingle', ['$timeout','$compile', function($timeout, $compile) {
   return {
     restrict: 'EA',
