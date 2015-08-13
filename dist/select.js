@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.12.1 - 2015-08-12T21:45:53.186Z
+ * Version: 0.12.1 - 2015-08-13T22:10:42.454Z
  * License: MIT
  */
 
@@ -280,7 +280,7 @@ uis.controller('uiSelectCtrl',
   if (ctrl.searchInput.length !== 1) {
     throw uiSelectMinErr('searchInput', "Expected 1 input.ui-select-search but got '{0}'.", ctrl.searchInput.length);
   }
-  
+
   ctrl.isEmpty = function() {
     return angular.isUndefined(ctrl.selected) || ctrl.selected === null || ctrl.selected === '';
   };
@@ -569,7 +569,7 @@ uis.controller('uiSelectCtrl',
   // Toggle dropdown
   ctrl.toggle = function(e) {
     if (ctrl.open) {
-      ctrl.close();
+      ctrl.close(true);
       e.preventDefault();
       e.stopPropagation();
     } else {
@@ -642,7 +642,7 @@ uis.controller('uiSelectCtrl',
         }
         break;
       case KEY.ESC:
-        ctrl.close();
+        ctrl.close(true);
         break;
       default:
         processed = false;
@@ -657,7 +657,7 @@ uis.controller('uiSelectCtrl',
 
     // if(~[KEY.ESC,KEY.TAB].indexOf(key)){
     //   //TODO: SEGURO?
-    //   ctrl.close();
+    //   ctrl.close(true);
     // }
 
     $scope.$apply(function() {
