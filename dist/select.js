@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.12.1 - 2015-08-13T22:10:42.454Z
+ * Version: 0.12.1 - 2015-08-18T21:11:09.457Z
  * License: MIT
  */
 
@@ -550,7 +550,13 @@ uis.controller('uiSelectCtrl',
     _resetSearchInput();
     ctrl.open = false;
 
-    $scope.$broadcast('uis:close', skipFocusser);
+    if ($scope.$select.focusser && $scope.$select.focusser.length) {
+      $timeout(function() {
+        $scope.$select.focusser[0].blur();
+      });
+    }
+
+    $scope.$broadcast('uis:close', true || skipFocusser);
 
   };
 

@@ -313,7 +313,13 @@ uis.controller('uiSelectCtrl',
     _resetSearchInput();
     ctrl.open = false;
 
-    $scope.$broadcast('uis:close', skipFocusser);
+    if ($scope.$select.focusser && $scope.$select.focusser.length) {
+      $timeout(function() {
+        $scope.$select.focusser[0].blur();
+      });
+    }
+
+    $scope.$broadcast('uis:close', true || skipFocusser);
 
   };
 
