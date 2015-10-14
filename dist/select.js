@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.12.1 - 2015-10-04T12:34:38.006Z
+ * Version: 0.12.1 - 2015-10-14T17:20:52.317Z
  * License: MIT
  */
 
@@ -783,10 +783,13 @@ uis.directive('uiSelect',
     compile: function(tElement, tAttrs) {
 
       //Multiple or Single depending if multiple attribute presence
-      if (angular.isDefined(tAttrs.multiple))
-        tElement.append("<ui-select-multiple/>").removeAttr('multiple');
-      else
+      if (angular.isDefined(tAttrs.multiple)) {
+        tElement
+          .append("<ui-select-multiple " + (tAttrs.removeSelected !== undefined ? (" remove-selected=\"" + tAttrs.removeSelected + "\"") : "") + "/>")
+          .removeAttr('multiple');
+      } else {
         tElement.append("<ui-select-single/>");
+      }
 
       return function(scope, element, attrs, ctrls, transcludeFn) {
 
@@ -1174,7 +1177,7 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
       //$select.selected = raw selected objects (ignoring any property binding)
 
       $select.multiple = true;
-      $select.removeSelected = true;
+      $select.removeSelected = attrs.removeSelected !== undefined ? (attrs.removeSelected == "true") : true;
 
       //Input that will handle focus
       $select.focusInput = $select.searchInput;

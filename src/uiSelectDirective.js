@@ -18,10 +18,13 @@ uis.directive('uiSelect',
     compile: function(tElement, tAttrs) {
 
       //Multiple or Single depending if multiple attribute presence
-      if (angular.isDefined(tAttrs.multiple))
-        tElement.append("<ui-select-multiple/>").removeAttr('multiple');
-      else
+      if (angular.isDefined(tAttrs.multiple)) {
+        tElement
+          .append("<ui-select-multiple " + (tAttrs.removeSelected !== undefined ? (" remove-selected=\"" + tAttrs.removeSelected + "\"") : "") + "/>")
+          .removeAttr('multiple');
+      } else {
         tElement.append("<ui-select-single/>");
+      }
 
       return function(scope, element, attrs, ctrls, transcludeFn) {
 

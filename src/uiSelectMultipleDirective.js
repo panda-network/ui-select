@@ -72,7 +72,7 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
       //$select.selected = raw selected objects (ignoring any property binding)
 
       $select.multiple = true;
-      $select.removeSelected = true;
+      $select.removeSelected = attrs.removeSelected !== undefined ? (attrs.removeSelected == "true") : true;
 
       //Input that will handle focus
       $select.focusInput = $select.searchInput;
