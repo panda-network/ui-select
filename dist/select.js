@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.12.1 - 2015-10-14T17:20:52.317Z
+ * Version: 0.12.1 - 2016-08-02T14:59:20.592Z
  * License: MIT
  */
 
@@ -670,27 +670,25 @@ uis.controller('uiSelectCtrl',
 
       var tagged = false;
 
-      if (ctrl.items.length > 0 || ctrl.tagging.isActivated) {
-        _handleDropDownSelection(key);
-        if ( ctrl.taggingTokens.isActivated ) {
-          for (var i = 0; i < ctrl.taggingTokens.tokens.length; i++) {
-            if ( ctrl.taggingTokens.tokens[i] === KEY.MAP[e.keyCode] ) {
-              // make sure there is a new value to push via tagging
-              if ( ctrl.search.length > 0 ) {
-                tagged = true;
-              }
+      _handleDropDownSelection(key);
+      if ( ctrl.taggingTokens.isActivated ) {
+        for (var i = 0; i < ctrl.taggingTokens.tokens.length; i++) {
+          if ( ctrl.taggingTokens.tokens[i] === KEY.MAP[e.keyCode] ) {
+            // make sure there is a new value to push via tagging
+            if ( ctrl.search.length > 0 ) {
+              tagged = true;
             }
           }
-          if ( tagged ) {
-            $timeout(function() {
-              ctrl.searchInput.triggerHandler('tagged');
-              var newItem = ctrl.search.replace(KEY.MAP[e.keyCode],'').trim();
-              if ( ctrl.tagging.fct ) {
-                newItem = ctrl.tagging.fct( newItem );
-              }
-              if (newItem) ctrl.select(newItem, true);
-            });
-          }
+        }
+        if ( tagged ) {
+          $timeout(function() {
+            ctrl.searchInput.triggerHandler('tagged');
+            var newItem = ctrl.search.replace(KEY.MAP[e.keyCode],'').trim();
+            if ( ctrl.tagging.fct ) {
+              newItem = ctrl.tagging.fct( newItem );
+            }
+            if (newItem) ctrl.select(newItem, true);
+          });
         }
       }
 
